@@ -5,32 +5,77 @@ import PIL.ImageDraw
 import numpy as np
 
 # Open the files in the same directory as the Python script
-directory = os.path.dirname(os.path.abspath(__file__))  
-student_file = os.path.join(directory, 'Earth1.JPG')
+directory = os.getcwd() 
 
-# Open and show the student image in a new Figure window
-student_img = PIL.Image.open(student_file)
-fig, axes = plt.subplots(1, 2)
-axes[0].imshow(student_img, interpolation='none')
-
-# Open, resize, and display earth
-
-recycle_file = os.path.join(directory, 'Recycle Sign.png')
-recycle_img = PIL.Image.open(recycle_file)
-recycle_small = recycle_img.resize((600,600 )) #eye width and height measured in plt
-recycle_small = PIL.Image.new('RGBA',(1000,1000), (35,255,35,90))
-fig2, axes2 = plt.subplots(1, 2)
-axes2[0].imshow(recycle_img)
-axes2[1].imshow(recycle_small)
+# Open and show the images in a new Figure window
 
 
-# Paste earth into right eye and display
+
+
 # Uses alpha from mask
-student_img.paste(recycle_small, (0, 0), mask=recycle_small) 
-student_img.paste(recycle_small, (700, 940), mask=recycle_small) 
-fig3, axes3 = plt.subplots(1, 2)
-axes3[0].imshow(student_img, interpolation='none')
-axes3[1].imshow(student_img, interpolation='none')
-axes3[1].set_xlim(500, 1500)
-axes3[1].set_ylim(1130, 850)
-fig3.show()
+
+
+def green_mask(original_image):
+    width,height = original_image.size
+    
+    drawing_layer.polygon([(0,0),(width,0),(width,height),(0,height)],fill=(127,0,127,255))
+def get_images(directory=None):
+    """ Returns PIL.Image objects for all the images in directory.
+    
+    If directory is not specified, uses current directory.
+    Returns a 2-tuple containing 
+    a list with a  PIL.Image object for each image file in root_directory, and
+    a list with a string filename for each image file in root_directory
+    """
+    
+    if directory == None:
+        directory = os.getcwd() # Use working directory if unspecified
+        
+    image_list = [] # Initialize aggregaotrs
+    file_list = []
+    
+    directory_list = os.listdir(directory) # Get list of files
+    for entry in directory_list:
+        absolute_filename = os.path.join(directory, entry)
+        try:
+            image = PIL.Image.open(absolute_filename)
+            file_list += [entry]
+            image_list += [image]
+        except IOError:
+            pass # do nothing with errors tying to open non-images
+    return image_list, file_list
+    
+def green_mask_to_all_images(directory=None):
+    """ Saves a modfied version of each image in directory.
+    
+    Uses current directory if no directory is specified. 
+    Places images in subdirectory 'modified', creating it if it does not exist.
+    New image files are of type PNG and have transparent rounded corners.
+    """
+    
+    if directory == None:
+        directory = os.getcwd() # Use working directory if unspecified
+        
+    # Create a new directory 'modified'
+    new_directory = os.path.join(directory, 'modified_earth')
+    try:
+        os.mkdir(new_directory)
+    except OSError:
+        pass # if the directory already exists, proceed  
+    
+    #load all the images
+    image_list, file_list = get_images(directory)  
+
+    #go through the images and save modified versions
+    for n in range(len(image_list)):
+        # Parse the filename
+        filename, filetype = os.path.splitext(file_list[n])
+        
+        # Round the corners with radius = 30% of short side
+        new_image = green_mask(image_list[n])
+        #save the altered image, suing PNG to retain transparency
+        new_image_filename = os.path.join(new_directory, filename + '.png')
+        new_image.save(new_image_filename)    
+
+
+ 
