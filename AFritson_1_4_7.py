@@ -6,19 +6,17 @@ import numpy as np
 
 # Open the files in the same directory as the Python script
 directory = os.getcwd() 
-
-# Open and show the images in a new Figure window
-
-
-
-
-# Uses alpha from mask
-
-
-def green_mask(original_image):
+#make a mask in the shape of a recycle sign
+def recycle_mask(original_image):
     width,height = original_image.size
-    
-    drawing_layer.polygon([(0,0),(width,0),(width,height),(0,height)],fill=(127,0,127,255))
+    recycle_file = os.path.join(directory, 'Recycle Sign.png')
+    recycle_img = PIL.Image.open(recycle_file)
+    recycle_size = recycle_img.resize((width, height))
+    result = PIL.Image.new('RGBA', original_image.size, (35,255,35,100))
+    result.paste(original_image, (8,0), mask=recycle_size)
+    return result
+
+#Get images in the current working directory
 def get_images(directory=None):
     """ Returns PIL.Image objects for all the images in directory.
     
@@ -44,8 +42,8 @@ def get_images(directory=None):
         except IOError:
             pass # do nothing with errors tying to open non-images
     return image_list, file_list
-    
-def green_mask_to_all_images(directory=None):
+#Make a new directory for the modified images
+def recycle_mask_to_all_images(directory=None):
     """ Saves a modfied version of each image in directory.
     
     Uses current directory if no directory is specified. 
@@ -72,7 +70,7 @@ def green_mask_to_all_images(directory=None):
         filename, filetype = os.path.splitext(file_list[n])
         
         # Round the corners with radius = 30% of short side
-        new_image = green_mask(image_list[n])
+        new_image = recycle_mask(image_list[n])
         #save the altered image, suing PNG to retain transparency
         new_image_filename = os.path.join(new_directory, filename + '.png')
         new_image.save(new_image_filename)    
