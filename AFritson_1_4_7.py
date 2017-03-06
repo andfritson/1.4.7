@@ -13,7 +13,7 @@ def recycle_mask(original_image):
     recycle_img = PIL.Image.open(recycle_file)
     recycle_size = recycle_img.resize((width, height))
     result = PIL.Image.new('RGBA', original_image.size, (35,255,35,100))
-    result.paste(original_image, (8,0), mask=recycle_size)
+    result.paste(original_image, (8,10), mask=recycle_size)
     return result
 
 #Get images in the current working directory
@@ -74,6 +74,3 @@ def recycle_mask_to_all_images(directory=None):
         #save the altered image, suing PNG to retain transparency
         new_image_filename = os.path.join(new_directory, filename + '.png')
         new_image.save(new_image_filename)    
-
-
- 
