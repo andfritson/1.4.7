@@ -13,7 +13,7 @@ def recycle_mask(original_image):
     recycle_img = PIL.Image.open(recycle_file)
     recycle_size = recycle_img.resize((width, height))
     result = PIL.Image.new('RGBA', original_image.size, (35,255,35,100))
-    result.paste(original_image, (8,10), mask=recycle_size)
+    result.paste(original_image, (8,10), mask=recycle_size) 
     return result
 
 #Get images in the current working directory
